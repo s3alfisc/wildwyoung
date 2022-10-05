@@ -5,12 +5,8 @@
 
 <!-- badges: start -->
 
-[![R-CMD-check](https://github.com/s3alfisc/wildwyoung/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/s3alfisc/wildwyoung/actions/workflows/R-CMD-check.yaml)
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html)
-![runiverse-package](https://s3alfisc.r-universe.dev/badges/wildwyoung)
-[![Codecov test
-coverage](https://codecov.io/gh/s3alfisc/wyoung/branch/main/graph/badge.svg)](https://app.codecov.io/gh/s3alfisc/wyoung?branch=main)
 <!-- badges: end -->
 
 The `wildwyoung` package computes Westfall-Young
