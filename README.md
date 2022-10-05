@@ -19,6 +19,14 @@ multiple-hypothesis-adjusted p-values for objects of type `fixest` and
 At its current stage, the package is experimental and it is not
 thoroughly tested.
 
+Because the bootstrap-resampling is based on the
+[fwildclusterboot](https://github.com/s3alfisc/fwildclusterboot)
+package, `wildwyoung` is usually really fast.
+
+The package is complementary to
+[wildwrolf](https://github.com/s3alfisc/wildrwolf), which implements the
+multiple hypothesis adjustment method following Romano and Wolf (2005).
+
 ## Installation
 
 You can install the development version from
