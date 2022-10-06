@@ -41,8 +41,10 @@ install.packages('wyoung', repos ='https://s3alfisc.r-universe.dev')
 <!-- As you can see in the example, there seems to be a bug in `wyoung()` for the pairs bootstrap. -->
 
 ``` r
-library(fixest)
 library(wildwyoung)
+library(wildrwolf)
+library(fixest)
+
 set.seed(43)
 
 N <- 5000
@@ -80,14 +82,23 @@ fit <- feols(c(Y1, Y2, Y3, Y4) ~ X1 + X2,
 
 rm(list= ls()[!(ls() %in% c('fit','data'))])
 
-res_wyoung <- wyoung(models = fit, param = "X1", B = 9999, nthreads = 1)
+res_wyoung <- wildwyoung::wyoung(models = fit, param = "X1", B = 9999, nthreads = 1)
+res_rwolf <- wildrwolf::rwolf(models = fit, param = "X1", B = 9999, nthreads = 1)
+
+pvals <- lapply(fit, function(x) pvalue(x)["X1"]) |> unlist()
+
 summary(res_wyoung)
 #>     model depvar    Estimate Std. Error   t value      Pr(>|t|) WY Pr(>|t|)
 #> 1 Model 1     Y1    1.024386 0.01399627  73.18988             0   0.0000000
 #> 2 Model 2     Y2   0.0236981  0.0141165  1.678752    0.09326287   0.1755176
 #> 3 Model 3     Y3    0.430615 0.01419439  30.33699 1.058334e-185   0.0000000
 #> 4 Model 4     Y4 -0.01059151 0.01412622 -0.749777     0.4534243   0.4493449
-pvals <- lapply(fit, function(x) pvalue(x)["X1"]) |> unlist()
+summary(res_rwolf)
+#>     model depvar    Estimate Std. Error   t value      Pr(>|t|) RW Pr(>|t|)
+#> 1 Model 1     Y1    1.024386 0.01399627  73.18988             0      0.0001
+#> 2 Model 2     Y2   0.0236981  0.0141165  1.678752    0.09326287      0.1770
+#> 3 Model 3     Y3    0.430615 0.01419439  30.33699 1.058334e-185      0.0001
+#> 4 Model 4     Y4 -0.01059151 0.01412622 -0.749777     0.4534243      0.4537
 p.adjust(pvals, method = "holm")
 #>            X1            X1            X1            X1 
 #>  0.000000e+00  1.865257e-01 3.175002e-185  4.534243e-01

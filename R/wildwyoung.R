@@ -1,3 +1,15 @@
+# models = fit
+# param = "X1"
+# B = 9999
+# R = NULL
+# r = 0
+# p_val_type = "two-tailed"
+# weights_type = "rademacher"
+# seed = NULL
+# engine = "R"
+# nthreads = 1
+
+
 #' Westfall-Young multiple hypotheses adjusted p-values
 #'
 #' Function implements the Westfall-Young multiple hypthesis correction procedure for objects of type fixest_multi (fixest_multi are objects created by `fixest::feols()` that use `feols()` multiple-estimation interface).
@@ -151,6 +163,7 @@ wyoung <- function(models, param, B, R = NULL, r = 0, p_val_type = "two-tailed",
 
   # order the p-values, from small to large
   # pvals[1] smallest, pvals[S] largest
+  names(pvals) <- paste("Model", 1:S)
   pvals_index <- order(pvals)
   pvals_ordered <- pvals[pvals_index]
   # further order the bootstrapped pvalue columns
@@ -175,6 +188,7 @@ wyoung <- function(models, param, B, R = NULL, r = 0, p_val_type = "two-tailed",
 
   # enforce monotoniciy
   pvalue_wy <- rep(NA, S)
+  names(pvalue_wy) <- names(pvals_ordered)
 
   # now from smallest to largest...
   pvalue_wy[1] <- ps[1]
@@ -182,8 +196,7 @@ wyoung <- function(models, param, B, R = NULL, r = 0, p_val_type = "two-tailed",
     pvalue_wy[s] <- max(pvalue_wy[s-1], ps[s])
   }
 
-  pvalue_wy <- pvalue_wy[pvals_index]
-  #
+  pvalue_wy <- pvalue_wy[match(paste("Model", 1:S), names(pvalue_wy))]
   # p.adjust(pvals, method = "holm")
 
   # summarize all results

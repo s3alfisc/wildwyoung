@@ -10,12 +10,15 @@ Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.2.0
 Imports: 
+  wildrwolf, 
   fixest, 
   fwildclusterboot, 
   dreamerr
 Suggests: 
     covr,
     testthat (>= 3.0.0)
-Remotes: s3alfisc/fwildclusterboot
+Remotes: 
+  s3alfisc/fwildclusterboot, 
+  s3alfisc/wildrwolf
 Config/testthat/edition: 3
 Roxygen: list(markdown = TRUE)
