@@ -38,6 +38,7 @@
 #' @importFrom fixest coeftable
 #' @importFrom dreamerr check_arg
 #' @importFrom stats terms formula pnorm
+#' @importFrom utils txtProgressBar setTxtProgressBar
 #' @export
 #'
 #' @return
@@ -105,9 +106,11 @@ wyoung <- function(models, param, B, R = NULL, r = 0, p_val_type = "two-tailed",
     }
   }
 
+  #brute force nested fixest_multi object into list
+  models <- as.list(models)
+  S <- length(models)
 
   call <- models[[1]]$call
-  S <- length(models)
 
   # define a function to get statistics from fixest_multi object
   get_stats_fixest <- function(x, stat){
@@ -124,15 +127,18 @@ wyoung <- function(models, param, B, R = NULL, r = 0, p_val_type = "two-tailed",
 
   pvals <- abs(unlist(lapply(1:S, function(x) get_stats_fixest(x, stat = "Pr(>|t|)"))))
 
+  pb <- txtProgressBar(min = 0, max = S, style = 3)
+
   res <-
     lapply(seq_along(models),
            function(x){
+
+             setTxtProgressBar(pb, x)
 
              clustid <- models[[x]]$call$cluster
              N <- models[[x]]$nobs
              k <- models[[x]]$nparams
                #G <- ...
-
 
                boottest_quote <-
                 quote(
@@ -204,15 +210,18 @@ wyoung <- function(models, param, B, R = NULL, r = 0, p_val_type = "two-tailed",
     lapply(1:S, function(x){
       tmp <- coeftable(models[[x]])
       tmp1 <- tmp[which(rownames(tmp) == param),]
-      suppressWarnings(tmp1$depvar <- as.character(models[[x]]$fml[[2]]))
-      tmp1$model <- paste("Model", x)
+      suppressWarnings(tmp1$depvar <- as.character(as.expression(models[[x]]$fml[[2]])))
+      suppressWarnings(tmp1$covars <- as.character(as.expression(models[[x]]$fml[[3]])))
+      tmp1$model <- as.character(x)
       tmp1
     })
 
   models_info <- Reduce(rbind, models_info)
 
   # some reordering
-  models_info <- models_info[, c(6,5, 1:4)]
+  # models_info <- models_info[, c(7, 5, 6, 1:4)]
+  models_info <- models_info[, c(7, 1:4)]
+
   models_info <- as.data.frame(models_info)
   # attributes(models_info)$row.names <- NULL
   rownames(models_info) <- NULL

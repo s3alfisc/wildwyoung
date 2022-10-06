@@ -48,7 +48,7 @@ library(fixest)
 
 set.seed(43)
 
-N <- 5000
+N <- 1000
 X1 <- rnorm(N)
 X2 <- rnorm(N)
 rho <- 0.5
@@ -76,23 +76,67 @@ data <- data.frame(Y1 = Y1,
                    #group_id = group_id,
                    splitvar = sample(1:2, N, TRUE))
 
-fit <- feols(c(Y1, Y2, Y3, Y4) ~ X1 + X2,
+fit <- feols(c(Y1, Y2, Y3, Y4) ~ csw(X1,X2),
              data = data,
              se = "hetero",
              ssc = ssc(cluster.adj = TRUE))
 
 rm(list= ls()[!(ls() %in% c('fit','data'))])
 
-res_wyoung <- wildwyoung::wyoung(models = fit, param = "X1", B = 9999, nthreads = 1)
-res_rwolf <- wildrwolf::rwolf(models = fit, param = "X1", B = 9999, nthreads = 1)
-
+res_wyoung <- wildwyoung::wyoung(
+  models = fit,
+  param = "X1", 
+  B = 9999,
+  seed = 23
+)
+res_rwolf <- wildrwolf::rwolf(
+  models = fit,
+  param = "X1", 
+  B = 9999, 
+  seed = 23
+)
 pvals <- lapply(fit, function(x) pvalue(x)["X1"]) |> unlist()
 
 # Westfall-Young Corrected P-values
 summary(res_wyoung)
+
 # Romano-Wolf Corrected P-values
 summary(res_rwolf)
+
 # Holm Corrected P-values
-p.adjust(pvals, method = "holm")
+p.adjust(pvals, method = "holm") |> round(4)
 
 ```
+
+## Performance
+
+The above procedures with `S=8` hypotheses, `N=5000` observations and `k %in% (1,2)` parameters finish each in around 3.5 seconds.
+
+```{r, warning = FALSE, message = FALSE, eval = FALSE}
+if(requireNamespace("microbenchmark")){
+  
+  microbenchmark::microbenchmark(
+    "Westfall-Young" = wildwyoung::wyoung(
+      models = fit,
+      param = "X1", 
+      B = 9999,
+      seed = 23
+    ),
+    "Romano-Wolf" = wildrwolf::rwolf(
+      models = fit,
+      param = "X1", 
+      B = 9999, 
+      seed = 23
+    ), 
+    times = 1
+  )
+ 
+ # t: seconds
+ #           expr      min       lq     mean   median       uq      max neval
+ # Westfall-Young 3.625710 3.625710 3.625710 3.625710 3.625710 3.625710     1
+ #    Romano-Wolf 3.382969 3.382969 3.382969 3.382969 3.382969 3.382969     1
+   
+}
+```
+
+
