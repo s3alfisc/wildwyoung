@@ -38,7 +38,7 @@
 #' @importFrom fixest coeftable
 #' @importFrom dreamerr check_arg
 #' @importFrom stats terms formula pnorm
-#' @importFrom utils txtProgressBar setTxtProgressBar
+#' @importFrom utils txtProgressBar setTxtProgressBar write.csv
 #' @export
 #'
 #' @return
