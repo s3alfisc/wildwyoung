@@ -16,7 +16,9 @@ Imports:
   wildrwolf
 Suggests: 
     covr,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0), 
+    RStata, 
+    MASS
 Remotes: 
   s3alfisc/fwildclusterboot, 
   s3alfisc/wildrwolf
